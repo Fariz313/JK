@@ -1,52 +1,75 @@
 <?php
-$database = "reservasiLapangan";
-$username = "root";
-$password = "";
-$host = "localhost";
-$conn = mysqli_connect($host, $username, $password, $database);
+include 'login.php';
 
-// Fungsi untuk memeriksa apakah jadwal lapangan futsal pada hari yang diinginkan kosong
-function cekJadwalKosong($tanggal)
-{
-    $cek = "SELECT * FROM `jadwal` WHERE `jam_penyewaan` = $tanggal;";
-    return mysqli_query($conn, $cek);
+if ($_POST['function'] == 'reservasi') {
+    echo json_encode(reservasi($conn));
+} else {
+    echo json_encode(riwayat($conn));
 }
 
-// Fungsi untuk mencari jadwal terdekat yang kosong
-function cariJadwalTerdekat($tanggal)
-{
-    // Lakukan pencarian ke database atau sumber data lainnya
-    // untuk mencari jadwal terdekat yang kosong pada tanggal yang diberikan
-    // Kembalikan jadwal terdekat yang kosong dalam format yang sesuai
-}
+// function cekJadwalKosong($tanggal, $conn)
+// {
+//     $cek = "SELECT * FROM `jadwal` WHERE `jam_penyewaan` = $3;";
+//     $kosong = mysqli_query($conn, $cek);
+//     return $kosong;
+// }
 
-// Fungsi untuk melakukan reservasi lapangan futsal secara brute force
-function reservasiLapanganFutsalBruteForce($tanggal)
+
+// function cariJadwalTerdekat($tanggal)
+// {
+// }
+
+
+// function reservasiLapanganFutsalBruteForce($tanggal)
+// {
+//     if (cekJadwalKosong($tanggal)) {
+
+//         echo "Reservasi lapangan futsal berhasil!";
+//     } else {
+//         $jadwalTerdekat = cariJadwalTerdekat($tanggal);
+//         $jumlahHari = 1;
+
+
+//         while (!$jadwalTerdekat && $jumlahHari <= 7) {
+//             $tanggalBerikutnya = date('Y-m-d', strtotime($tanggal . ' + ' . $jumlahHari . ' days'));
+//             $jadwalTerdekat = cariJadwalTerdekat($tanggalBerikutnya);
+//             $jumlahHari++;
+//         }
+
+//         if ($jadwalTerdekat) {
+
+//             echo "Reservasi lapangan futsal berhasil untuk jadwal: " . $jadwalTerdekat;
+//         } else {
+//             // Tidak ada jadwal kosong yang tersedia dalam 7 hari ke depan
+//             echo "Tidak ada jadwal kosong yang tersedia dalam 7 hari ke depan.";
+//         }
+//     }
+// }
+
+// // Contoh penggunaan
+// $tanggalYangDiinginkan = "2023-05-30";
+// reservasiLapanganFutsalBruteForce($tanggalYangDiinginkan);
+
+function reservasi($conn)
 {
-    if (cekJadwalKosong($tanggal)) {
-        // Jadwal kosong, lakukan reservasi lapangan futsal
-        echo "Reservasi lapangan futsal berhasil!";
+    $query = "INSERT INTO `reservasi` VALUES ('$_POST[nama]','$_POST[lapangan]', '$_POST[tanggal]', '$_POST[penyewaan]', '$_POST[durasi]');";
+    if (mysqli_query($conn, $query)) {
+        http_response_code(200);
+        return "Berhasil Reservasi";
     } else {
-        $jadwalTerdekat = cariJadwalTerdekat($tanggal);
-        $jumlahHari = 1;
+        http_response_code(400);
+        return "Reservasi gagal, cek data anda kembali atau lapangan tidak tersedia!";
+    };
+};
 
-        // Coba jadwal kosong pada hari-hari berikutnya secara berurutan
-        while (!$jadwalTerdekat && $jumlahHari <= 7) {
-            $tanggalBerikutnya = date('Y-m-d', strtotime($tanggal . ' + ' . $jumlahHari . ' days'));
-            $jadwalTerdekat = cariJadwalTerdekat($tanggalBerikutnya);
-            $jumlahHari++;
-        }
-
-        if ($jadwalTerdekat) {
-            // Jadwal terdekat ditemukan, lakukan reservasi lapangan futsal
-            echo "Reservasi lapangan futsal berhasil untuk jadwal: " . $jadwalTerdekat;
-        } else {
-            // Tidak ada jadwal kosong yang tersedia dalam 7 hari ke depan
-            echo "Tidak ada jadwal kosong yang tersedia dalam 7 hari ke depan.";
-        }
+function riwayat($conn)
+{
+    $query = "SELECT * FROM `reservasi`;";
+    $result = $conn->query($query);
+    $rows = [];
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
     }
-}
-
-// Contoh penggunaan
-$tanggalYangDiinginkan = "2023-05-30";
-reservasiLapanganFutsalBruteForce($tanggalYangDiinginkan);
+    $response = $rows;
+    return $response;
+};
