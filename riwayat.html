@@ -67,11 +67,7 @@
       <div class="w-100">
         <h4 class="my-3">Riwayat Reservasi</h4>
         <ul class="list-group" id="riwayat">
-          <li class="list-group-item">
-            Lapangan A <br />
-            12 Mei 2023 <br />
-            12:20
-          </li>
+          
         </ul>
       </div>
       <div
@@ -99,7 +95,9 @@
         alert(xhr.responseText);
       },
     }).done(function (data) {
-      console.log(data);
+      data.forEach(element => {
+        $("#riwayat").append(' <li class="list-group-item"> Lapangan '+element.lapangan+' <br /> '+element.tanggal+' <br /> '+element.jam_penyewaan+':00 </li> ')
+      });
     });
   });
 </script>

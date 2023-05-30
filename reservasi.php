@@ -3,16 +3,32 @@ include 'login.php';
 
 if ($_POST['function'] == 'reservasi') {
     echo json_encode(reservasi($conn));
+} else if ($_GET['tanggal']) {
+    echo json_encode(cekJadwalKosong($_GET['tanggal'], $conn));
 } else {
     echo json_encode(riwayat($conn));
 }
 
-// function cekJadwalKosong($tanggal, $conn)
-// {
-//     $cek = "SELECT * FROM `jadwal` WHERE `jam_penyewaan` = $3;";
-//     $kosong = mysqli_query($conn, $cek);
-//     return $kosong;
-// }
+function cekJadwalKosong($tanggal = null, $conn)
+{
+        if ($tanggal == null) {
+            $tanggal = date("Y-m-d");
+        }
+        $query = "SELECT * FROM `reservasi` WHERE `tanggal` = '$tanggal';";
+        $result = $conn->query($query);
+        $rows = [];
+        if($result){
+            while ($row = $result->fetch_assoc()) {
+                $rows[] = $row['jam_penyewaan'];
+            }
+        }
+        $response = $rows;
+        if($rows==null){
+            $response = [];
+        }
+        return $response;
+        
+}
 
 
 // function cariJadwalTerdekat($tanggal)
@@ -52,15 +68,17 @@ if ($_POST['function'] == 'reservasi') {
 
 function reservasi($conn)
 {
-    $query = "INSERT INTO `reservasi` VALUES ('$_POST[nama]','$_POST[lapangan]', '$_POST[tanggal]', '$_POST[penyewaan]', '$_POST[durasi]');";
+    $query = "INSERT INTO `reservasi` (nama,lapangan,tanggal,jam_penyewaan,durasi) VALUES ('$_POST[nama]','$_POST[lapangan]', '$_POST[tanggal]', '$_POST[penyewaan]', '1');";
     if (mysqli_query($conn, $query)) {
         http_response_code(200);
         return "Berhasil Reservasi";
     } else {
         http_response_code(400);
         return "Reservasi gagal, cek data anda kembali atau lapangan tidak tersedia!";
-    };
-};
+    }
+    ;
+}
+;
 
 function riwayat($conn)
 {
@@ -72,4 +90,5 @@ function riwayat($conn)
     }
     $response = $rows;
     return $response;
-};
+}
+;
