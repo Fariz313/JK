@@ -119,10 +119,10 @@
     }).done(function (data) {
       $('#penyewaan').prop("disabled", false);
       for (let index = 0; index < 25; index++) {
-        let option = '<option>' + index + '</option>'
+        let option = '<option value="'+index+'">' + index + ':00</option>'
         data.forEach(element => {
           if(element==index){
-            option = '<option disabled>' + index + '</option>'
+            option = '<option disabled>' + index + ':00</option>'
           }
         });
         $('#penyewaan').append(option)
