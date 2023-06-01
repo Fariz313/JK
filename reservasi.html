@@ -36,7 +36,9 @@
         </div>
       </div>
     </div>
-    <div class="w-100">
+    <div class="w-100 py-3">
+      <h3>Tanggal: </h3>
+      <input type="date" class="form-control" id="tanggal" />
       <h4 class="my-3">Lapangan yang tersedia saat ini :</h4>
       <ul class="list-group" id="listlapangan"></ul>
     </div>
@@ -64,13 +66,13 @@
     return [year, month, day].join('-');
   }
   const lapangan = ["A", "B", "C", "D", "E"];
-  $(document).ready(function () {
+  function getJadwal(date = formatDate(Date.now())) {
+    $("#listlapangan").html('');
     lapangan.forEach((element) => {
       let list = '<li class="list-group-item">Lapangan ' + element + '<br/> <img style="width:200px" src="' + element + '.jpeg"> </img>';
       let listJam = [];
       let listJamString = "<br/> Jam Ketersediaan: <br/>";
       let listEnd = "</li>";
-      console.log(list);
       $.ajax({
         type: "GET",
         url: "reservasi.php",
@@ -82,7 +84,7 @@
       }).done(function (data) {
         data.forEach(element2 => {
           if (element == element2.lapangan) {
-            if (formatDate(Date.now()) == element2.tanggal) {
+            if (date == element2.tanggal) {
               listJam.push(element2.jam_penyewaan)
             }
           }
@@ -91,19 +93,27 @@
           let isReserved = false
           let str = '<button class="p-1 btn '
           listJam.forEach(element => {
-            if(element == index){
-              isReserved =true
+            if (element == index) {
+              isReserved = true
             }
           });
-          if(isReserved){
-            str += 'btn-danger"> '+index+'</button>'
-          }else{
-            str += 'btn-success"> '+index+'</button>'
+          if (isReserved) {
+            str += 'btn-danger"> ' + index + '</button>'
+          } else {
+            str += 'btn-success"> ' + index + '</button>'
           }
-          listJamString+=str;
+          listJamString += str;
         }
         $("#listlapangan").append(list + listJamString + listEnd);
       });
     });
+  }
+
+  $(document).ready(function () {
+    getJadwal();
+    $("#tanggal")
+      .on("change", function () {
+        getJadwal($(this).val())
+      })
   });
 </script>
