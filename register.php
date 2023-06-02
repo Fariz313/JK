@@ -11,7 +11,7 @@ $validate = '';
 
 if (mysqli_query($conn, $register)) {
     $_SESSION['username'] = $username;
-    header('Location: index.php');
+    header('Location: index.html');
 } else {
     echo "<script>alert('Pastikan Email dan Password anda benar')</script>";
 };
