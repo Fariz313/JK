@@ -1,9 +1,5 @@
 <?php
-$database = "reservasiLapangan";
-$username = "root";
-$password = "";
-$host = "localhost";
-$conn = mysqli_connect($host, $username, $password, $database);
+include 'login.php';
 
 error_reporting(0);
 

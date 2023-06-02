@@ -1,5 +1,5 @@
 <?php
-include 'login.php';
+include 'config.php';
 
 if ($_POST['function'] == 'reservasi') {
     echo json_encode(reservasi($conn));
@@ -11,23 +11,22 @@ if ($_POST['function'] == 'reservasi') {
 
 function cekJadwalKosong($tanggal = null, $conn)
 {
-        if ($tanggal == null) {
-            $tanggal = date("Y-m-d");
+    if ($tanggal == null) {
+        $tanggal = date("Y-m-d");
+    }
+    $query = "SELECT * FROM `reservasi` WHERE `tanggal` = '$tanggal';";
+    $result = $conn->query($query);
+    $rows = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $rows[] = $row['jam_penyewaan'];
         }
-        $query = "SELECT * FROM `reservasi` WHERE `tanggal` = '$tanggal';";
-        $result = $conn->query($query);
-        $rows = [];
-        if($result){
-            while ($row = $result->fetch_assoc()) {
-                $rows[] = $row['jam_penyewaan'];
-            }
-        }
-        $response = $rows;
-        if($rows==null){
-            $response = [];
-        }
-        return $response;
-        
+    }
+    $response = $rows;
+    if ($rows == null) {
+        $response = [];
+    }
+    return $response;
 }
 
 
@@ -75,10 +74,8 @@ function reservasi($conn)
     } else {
         http_response_code(400);
         return "Reservasi gagal, cek data anda kembali atau lapangan tidak tersedia!";
-    }
-    ;
-}
-;
+    };
+};
 
 function riwayat($conn)
 {
@@ -90,5 +87,4 @@ function riwayat($conn)
     }
     $response = $rows;
     return $response;
-}
-;
+};
